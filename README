@@ -1,4 +1,4 @@
-This package parser INI-style configuration files common on *nix systems.
+This package parses INI-style configuration files common on *nix systems.
 Supported are single key/value pairs as well as keys with list values. Lists of
 items are defined as space-separated elements encapsulated by ( and )
 
