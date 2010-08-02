@@ -1,279 +1,143 @@
+// Copyright (c) 2009-2010 Jim Teeuwen.
+//
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
+//
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+//
+//     1. The origin of this software must not be misrepresented; you must not
+//     claim that you wrote the original software. If you use this software
+//     in a product, an acknowledgment in the product documentation would be
+//     appreciated but is not required.
+//
+//     2. Altered source versions must be plainly marked as such, and must not be
+//     misrepresented as being the original software.
+//
+//     3. This notice may not be removed or altered from any source distribution.
+
 /*
-	This package parser INI-style configuration files common on *nix systems.
-	Supported are single key/value pairs as well as keys with list values.
-	Lists of items are defined as space-separated elements encapsulated by (
-	and )
-
-	example:
-		DAEMONS=(network crond hal vboxdrv)
-
-	Because a list can contain many items, this construct is the only one that
-	may be defined across multiple lines in the ini file. The rest are all
-	limited to a single line.
-
-	Comments in the inifile are supported by prefixing a comment with #
-	At this point, comment information is entirely disgarded when an ini file
-	is loaded. So when saving the loaded file out again, this information is
-	lost permanently!
-
-	TODO: Implement Marshal/Unmarshal functions.
+This package parses run of the mill ini configutation files. It allows loading
+and saving. It supports sections and preservation of comments.
 */
 package ini
 
 import "os"
-import "strings"
-import "fmt"
 import "io/ioutil"
 import "bytes"
-import "strconv"
+import "strings"
 
-type Map map[string]string
+var strPairSeparator []byte = []byte{'='}
+var strNewline []byte = []byte{'\n'}
+var strComment []byte = []byte{';'}
 
-var bComment []byte = []byte{'#'}
-var bSep []byte = []byte{'='}
-var bQuote []byte = []byte{'"'}
-var bTab []byte = []byte{'\t'}
-var bSpace []byte = []byte{' '}
-var bEmpty = []byte{}
-var bNewline []byte = []byte{'\n'}
-var bListOpen []byte = []byte{'('}
-var bListClose []byte = []byte{')'}
-
-func (this Map) Set(key string, val interface{}) {
-	key = strings.ToUpper(key)
-	this[key] = fmt.Sprintf("%v", val)
-}
-
-func (this Map) Get(key, defval string) string {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		return v
-	}
-	return defval
-}
-
-func (this Map) GetByte(key string, defval byte) byte {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		if n, e := strconv.Atoi(v); e == nil {
-			return byte(n)
-		}
-	}
-	return defval
-}
-
-func (this Map) GetInt8(key string, defval int8) int8 {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		if n, e := strconv.Atoi(v); e == nil {
-			return int8(n)
-		}
-	}
-	return defval
-}
-
-func (this Map) GetUint8(key string, defval uint8) uint8 {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		if n, e := strconv.Atoui(v); e == nil {
-			return uint8(n)
-		}
-	}
-	return defval
-}
-
-func (this Map) GetInt16(key string, defval int16) int16 {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		if n, e := strconv.Atoi(v); e == nil {
-			return int16(n)
-		}
-	}
-	return defval
-}
-
-func (this Map) GetUint16(key string, defval uint16) uint16 {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		if n, e := strconv.Atoui(v); e == nil {
-			return uint16(n)
-		}
-	}
-	return defval
-}
-
-func (this Map) GetInt(key string, defval int) int {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		if n, e := strconv.Atoi(v); e == nil {
-			return n
-		}
-	}
-	return defval
-}
-
-func (this Map) GetUint(key string, defval uint) uint {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		if n, e := strconv.Atoui(v); e == nil {
-			return n
-		}
-	}
-	return defval
-}
-
-func (this Map) GetInt32(key string, defval int32) int32 {
-	return int32(this.GetInt(key, int(defval)))
-}
-
-func (this Map) GetUint32(key string, defval uint32) uint32 {
-	return uint32(this.GetInt(key, int(defval)))
-}
-
-func (this Map) GetInt64(key string, defval int64) int64 {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		if n, e := strconv.Atoi64(v); e == nil {
-			return n
-		}
-	}
-	return defval
-}
-
-func (this Map) GetUint64(key string, defval uint64) uint64 {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		if n, e := strconv.Atoui64(v); e == nil {
-			return n
-		}
-	}
-	return defval
-}
-
-func (this Map) GetBool(key string, defval bool) bool {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		return strings.ToLower(v) == "true"
-	}
-	return defval
-}
-
-func (this Map) GetList(key string) []string {
-	key = strings.ToUpper(key)
-	if v, ok := this[key]; ok {
-		// We need 2 lists. One contains the split result, the other a filtered
-		// version with empty entries removed and other entries trimmed.
-		tmp := strings.Split(v, " ", -1)
-		list := make([]string, len(tmp))
-		count := 0
-
-		for _, v := range tmp {
-			v = strings.TrimSpace(v)
-			if len(v) > 0 {
-				list[count] = v
-				count++
-			}
-		}
-
-		return list[0:count]
-	}
-	return []string{}
-}
-
-/*
-	This loads the given file and parses it's key/value pairs into a
-	configuration map. This function ignores comments (lines starting with #).
-*/
-func Load(file string) (cfg Map, err os.Error) {
+func Load(file string) (cfg *Config, err os.Error) {
 	var data []byte
-	var lines [][]byte
+	var pair [][]byte
+	var n int
 
-	if data, err = ioutil.ReadFile(file); err != nil || len(data) == 0 {
+	if data, err = ioutil.ReadFile(file); err != nil {
 		return
 	}
 
-	lines = bytes.Split(data, bNewline, -1)
+	cfg = &Config{}
+	cfg.Sections = make(map[string]*Section)
 
-	var k, v string
-	var ok bool
+	section := "_"
+	addSection(cfg, section)
 
-	linebuf := bytes.NewBuffer(data)
-
-	cfg = make(Map)
-	for i, _ := range lines {
-		if lines[i] = bytes.TrimSpace(lines[i]); len(lines[i]) == 0 {
+	for _, line := range bytes.Split(data, strNewline, -1) {
+		if line = bytes.TrimSpace(line); len(line) == 0 {
 			continue
 		}
 
-		linebuf.Truncate(0)
+		pair = bytes.Split(line, strPairSeparator, -1)
 
-		if bytes.IndexByte(lines[i], '(') != -1 && bytes.IndexByte(lines[i], ')') == -1 {
-			for ; i < len(lines); i++ {
-				lines[i] = bytes.Join(bytes.Split(lines[i], bTab, -1), bSpace)
-				linebuf.Write(lines[i])
-				if bytes.IndexByte(lines[i], ')') != -1 {
-					break
-				}
-			}
-		} else {
-			linebuf.Write(lines[i])
+		for i, _ := range pair {
+			pair[i] = bytes.TrimSpace(pair[i])
 		}
 
-		if k, v, ok = parseLine(linebuf.Bytes()); ok {
-			cfg[k] = v
+		switch {
+		case len(pair) == 1 && len(pair[0]) > 1:
+			switch {
+			case pair[0][0] == ';' || pair[0][0] == '#':
+				addComment(cfg, section, pair[0][1:])
+			case pair[0][0] == '[' && pair[0][len(pair[0])-1] == ']':
+				section = string(pair[0][1 : len(pair[0])-1])
+				addSection(cfg, section)
+			}
+		case len(pair) == 2:
+			if n = bytes.Index(pair[1], strComment); n != -1 {
+				addComment(cfg, section, pair[1][n+1:])
+				pair[1] = pair[1][0:n]
+			}
+			addPair(cfg, section, pair)
 		}
 	}
 
 	return
 }
 
-/*
-	This saves the given configuration map to the specified file in ini-style.
-	Note that the comments are not retained, so saving the config back to a file
-	loses this information.
-*/
-func Save(file string, cfg Map) (err os.Error) {
+func Save(file string, cfg *Config) (err os.Error) {
 	var data []byte
 	buf := bytes.NewBuffer(data)
 
-	for k, v := range cfg {
-		buf.WriteString(fmt.Sprintf("%s = %s\n", k, v))
+	// global section _ goes first
+	if s, ok := cfg.Sections["_"]; ok {
+		writeSection(buf, s)
+	}
+
+	for k, v := range cfg.Sections {
+		if k == "_" {
+			continue
+		}
+		writeSection(buf, v)
 	}
 
 	return ioutil.WriteFile(file, buf.Bytes(), 0600)
 }
 
-func parseLine(line []byte) (k, v string, ok bool) {
-	var sep int
-
-	if sep = bytes.Index(line, bComment); sep != -1 {
-		line = line[0:sep]
+func writeSection(buf *bytes.Buffer, s *Section) {
+	if s.Name != "_" {
+		buf.WriteString(s.String())
+		buf.WriteByte('\n')
 	}
 
-	if line = bytes.TrimSpace(line); len(line) == 0 {
-		return "", "", false
+	for _, c := range s.Comments {
+		buf.WriteString("; ")
+		buf.WriteString(c)
+		buf.WriteByte('\n')
 	}
 
-	if sep = bytes.Index(line, bSep); sep == -1 {
-		return "", "", false
+	for sk, sv := range s.Pairs {
+		buf.WriteString(sk)
+		buf.WriteString(" = ")
+		buf.WriteString(sv)
+		buf.WriteByte('\n')
 	}
 
-	if k = string(bytes.TrimSpace(line[0:sep])); len(k) == 0 {
-		return "", "", false
+	buf.WriteByte('\n')
+}
+
+func addComment(cfg *Config, name string, comment []byte) {
+	slice := make([]string, len(cfg.Sections[name].Comments)+1)
+	copy(slice, cfg.Sections[name].Comments)
+	slice[len(slice)-1] = string(bytes.TrimSpace(comment))
+	cfg.Sections[name].Comments = slice
+}
+
+func addSection(cfg *Config, name string) {
+	name = strings.ToLower(name)
+	if _, ok := cfg.Sections[name]; !ok {
+		cfg.Sections[name] = NewSection(name)
 	}
+}
 
-	line = bytes.TrimSpace(line[sep+1:])
-	line = bytes.Join(bytes.Split(line, bQuote, -1), bEmpty)
-
-	k = strings.ToUpper(k)
-	v = string(line)
-
-	if len(v) > 1 {
-		if v[0] == '(' && v[len(v)-1] == ')' {
-			v = v[1 : len(v)-1]
-		}
+func addPair(cfg *Config, name string, pair [][]byte) {
+	if pair[0] = bytes.TrimSpace(pair[0]); len(pair[0]) == 0 {
+		return
 	}
-
-	ok = true
-	return
+	cfg.Sections[name].Pairs[string(pair[0])] = string(bytes.TrimSpace(pair[1]))
 }
