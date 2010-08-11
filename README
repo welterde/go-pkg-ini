@@ -3,7 +3,7 @@
        author: jim teeuwen <jimteeuwen@gmail.com>
 ================================================================================
 
-This package parses run of the mill ini configutation files. It allows loading
+This package parses run of the mill ini configuration files. It allows loading
 and saving. It supports sections and preservation of comments.
 
 See ini/ini_test.go for usage examples.
