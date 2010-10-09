@@ -25,6 +25,12 @@ type Config struct {
 	Sections map[string]*Section
 }
 
+func NewConfig() *Config {
+	c := new(Config)
+	c.Sections = make(map[string]*Section)
+	return c
+}
+
 func (this *Config) Clear() {
 	this.Sections = make(map[string]*Section)
 }
