@@ -44,23 +44,14 @@ func (this *Section) Set(key string, val interface{}) {
 	this.Pairs[key] = fmt.Sprintf("%v", val)
 }
 
-func (this *Section) Get(key, defval string) string {
+func (this *Section) S(key, defval string) string {
 	if v, ok := this.Pairs[key]; ok {
 		return v
 	}
 	return defval
 }
 
-func (this *Section) GetByte(key string, defval byte) byte {
-	if v, ok := this.Pairs[key]; ok {
-		if n, err := strconv.Atoi(v); err == nil {
-			return byte(n)
-		}
-	}
-	return defval
-}
-
-func (this *Section) GetInt(key string, defval int) int {
+func (this *Section) I(key string, defval int) int {
 	if v, ok := this.Pairs[key]; ok {
 		if n, err := strconv.Atoi(v); err == nil {
 			return n
@@ -69,19 +60,19 @@ func (this *Section) GetInt(key string, defval int) int {
 	return defval
 }
 
-func (this *Section) GetInt8(key string, defval int8) int8 {
-	return int8(this.GetInt(key, int(defval)))
+func (this *Section) I8(key string, defval int8) int8 {
+	return int8(this.I(key, int(defval)))
 }
 
-func (this *Section) GetInt16(key string, defval int16) int16 {
-	return int16(this.GetInt(key, int(defval)))
+func (this *Section) I16(key string, defval int16) int16 {
+	return int16(this.I(key, int(defval)))
 }
 
-func (this *Section) GetInt32(key string, defval int32) int32 {
-	return int32(this.GetInt(key, int(defval)))
+func (this *Section) I32(key string, defval int32) int32 {
+	return int32(this.I(key, int(defval)))
 }
 
-func (this *Section) GetInt64(key string, defval int64) int64 {
+func (this *Section) I64(key string, defval int64) int64 {
 	if v, ok := this.Pairs[key]; ok {
 		if n, err := strconv.Atoi64(v); err == nil {
 			return n
@@ -90,7 +81,7 @@ func (this *Section) GetInt64(key string, defval int64) int64 {
 	return defval
 }
 
-func (this *Section) GetUint(key string, defval uint) uint {
+func (this *Section) U(key string, defval uint) uint {
 	if v, ok := this.Pairs[key]; ok {
 		if n, err := strconv.Atoui(v); err == nil {
 			return n
@@ -99,19 +90,19 @@ func (this *Section) GetUint(key string, defval uint) uint {
 	return defval
 }
 
-func (this *Section) GetUint8(key string, defval uint8) uint8 {
-	return uint8(this.GetUint(key, uint(defval)))
+func (this *Section) U8(key string, defval uint8) uint8 {
+	return uint8(this.U(key, uint(defval)))
 }
 
-func (this *Section) GetUint16(key string, defval uint16) uint16 {
-	return uint16(this.GetUint(key, uint(defval)))
+func (this *Section) U16(key string, defval uint16) uint16 {
+	return uint16(this.U(key, uint(defval)))
 }
 
-func (this *Section) GetUint32(key string, defval uint32) uint32 {
-	return uint32(this.GetUint(key, uint(defval)))
+func (this *Section) U32(key string, defval uint32) uint32 {
+	return uint32(this.U(key, uint(defval)))
 }
 
-func (this *Section) GetUint64(key string, defval uint64) uint64 {
+func (this *Section) U64(key string, defval uint64) uint64 {
 	if v, ok := this.Pairs[key]; ok {
 		if n, err := strconv.Atoui64(v); err == nil {
 			return n
@@ -120,7 +111,7 @@ func (this *Section) GetUint64(key string, defval uint64) uint64 {
 	return defval
 }
 
-func (this *Section) GetFloat(key string, defval float) float {
+func (this *Section) F(key string, defval float) float {
 	if v, ok := this.Pairs[key]; ok {
 		if f, err := strconv.Atof(v); err == nil {
 			return f
@@ -129,7 +120,7 @@ func (this *Section) GetFloat(key string, defval float) float {
 	return defval
 }
 
-func (this *Section) GetFloat32(key string, defval float32) float32 {
+func (this *Section) F32(key string, defval float32) float32 {
 	if v, ok := this.Pairs[key]; ok {
 		if f, err := strconv.Atof32(v); err == nil {
 			return f
@@ -138,7 +129,7 @@ func (this *Section) GetFloat32(key string, defval float32) float32 {
 	return defval
 }
 
-func (this *Section) GetFloat64(key string, defval float64) float64 {
+func (this *Section) F64(key string, defval float64) float64 {
 	if v, ok := this.Pairs[key]; ok {
 		if f, err := strconv.Atof64(v); err == nil {
 			return f
@@ -147,7 +138,7 @@ func (this *Section) GetFloat64(key string, defval float64) float64 {
 	return defval
 }
 
-func (this *Section) GetBool(key string, defval bool) bool {
+func (this *Section) B(key string, defval bool) bool {
 	if v, ok := this.Pairs[key]; ok {
 		if b, err := strconv.Atob(v); err == nil {
 			return b

@@ -40,177 +40,166 @@ func (this *Config) Set(section, key string, val interface{}) {
 	this.Sections[section].Set(key, val)
 }
 
-func (this *Config) Get(section, key, defval string) string {
+func (this *Config) S(section, key, defval string) string {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.Get(key, defval)
+		return s.S(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetByte(section, key string, defval byte) byte {
+func (this *Config) I(section, key string, defval int) int {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetByte(key, defval)
+		return s.I(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetInt(section, key string, defval int) int {
+func (this *Config) I8(section, key string, defval int8) int8 {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetInt(key, defval)
+		return s.I8(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetInt8(section, key string, defval int8) int8 {
+func (this *Config) I16(section, key string, defval int16) int16 {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetInt8(key, defval)
+		return s.I16(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetInt16(section, key string, defval int16) int16 {
+func (this *Config) I32(section, key string, defval int32) int32 {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetInt16(key, defval)
+		return s.I32(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetInt32(section, key string, defval int32) int32 {
+func (this *Config) I64(section, key string, defval int64) int64 {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetInt32(key, defval)
+		return s.I64(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetInt64(section, key string, defval int64) int64 {
+func (this *Config) U(section, key string, defval uint) uint {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetInt64(key, defval)
+		return s.U(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetUint(section, key string, defval uint) uint {
+func (this *Config) U8(section, key string, defval uint8) uint8 {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetUint(key, defval)
+		return s.U8(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetUint8(section, key string, defval uint8) uint8 {
+func (this *Config) U16(section, key string, defval uint16) uint16 {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetUint8(key, defval)
+		return s.U16(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetUint16(section, key string, defval uint16) uint16 {
+func (this *Config) U32(section, key string, defval uint32) uint32 {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetUint16(key, defval)
+		return s.U32(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetUint32(section, key string, defval uint32) uint32 {
+func (this *Config) U64(section, key string, defval uint64) uint64 {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetUint32(key, defval)
+		return s.U64(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetUint64(section, key string, defval uint64) uint64 {
+func (this *Config) F(section, key string, defval float) float {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetUint64(key, defval)
+		return s.F(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetFloat(section, key string, defval float) float {
+func (this *Config) F32(section, key string, defval float32) float32 {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetFloat(key, defval)
+		return s.F32(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetFloat32(section, key string, defval float32) float32 {
+func (this *Config) F64(section, key string, defval float64) float64 {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetFloat32(key, defval)
+		return s.F64(key, defval)
 	}
 
 	return defval
 }
 
-func (this *Config) GetFloat64(section, key string, defval float64) float64 {
+func (this *Config) B(section, key string, defval bool) bool {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)
 
 	if s, ok := this.Sections[section]; ok {
-		return s.GetFloat64(key, defval)
-	}
-
-	return defval
-}
-
-func (this *Config) GetBool(section, key string, defval bool) bool {
-	section = strings.ToLower(section)
-	key = strings.ToLower(key)
-
-	if s, ok := this.Sections[section]; ok {
-		return s.GetBool(key, defval)
+		return s.B(key, defval)
 	}
 
 	return defval

@@ -14,12 +14,12 @@ func Test(t *testing.T) {
 	}
 
 	// Make sure values are loaded properly
-	if n := cfg.GetInt("graphics", "width", 0); n != 320 {
+	if n := cfg.I("graphics", "width", 0); n != 320 {
 		t.Errorf("graphics.width: expected 320, got %d", n)
 		return
 	}
 
-	if n := cfg.GetInt("graphics", "height", 0); n != 240 {
+	if n := cfg.I("graphics", "height", 0); n != 240 {
 		t.Errorf("graphics.width: expected 240, got %d", n)
 		return
 	}
@@ -32,7 +32,7 @@ func Test(t *testing.T) {
 	cfg.Set("logs", "error", "/var/log/error.log")
 
 	// Check that it worked
-	if s := cfg.Get("logs", "error", ""); s != "/var/log/error.log" {
+	if s := cfg.S("logs", "error", ""); s != "/var/log/error.log" {
 		t.Errorf("logs.error: expected '/var/log/error.log', got %s", s)
 		return
 	}
