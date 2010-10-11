@@ -63,14 +63,14 @@ func Load(file string) (cfg *Config, err os.Error) {
 		case len(pair) == 1 && len(pair[0]) > 1:
 			switch {
 			case pair[0][0] == ';' || pair[0][0] == '#':
-				addComment(cfg, section, pair[0][1:])
+				cfg.Sections[section].AddComment(string(pair[0][1:]))
 			case pair[0][0] == '[' && pair[0][len(pair[0])-1] == ']':
 				section = string(pair[0][1 : len(pair[0])-1])
 				addSection(cfg, section)
 			}
 		case len(pair) == 2:
 			if n = bytes.Index(pair[1], strComment); n != -1 {
-				addComment(cfg, section, pair[1][n+1:])
+				cfg.Sections[section].AddComment(string(pair[1][n+1:]))
 				pair[1] = pair[1][0:n]
 			}
 			addPair(cfg, section, pair)
@@ -119,13 +119,6 @@ func writeSection(buf *bytes.Buffer, s *Section) {
 	}
 
 	buf.WriteByte('\n')
-}
-
-func addComment(cfg *Config, name string, comment []byte) {
-	slice := make([]string, len(cfg.Sections[name].Comments)+1)
-	copy(slice, cfg.Sections[name].Comments)
-	slice[len(slice)-1] = string(bytes.TrimSpace(comment))
-	cfg.Sections[name].Comments = slice
 }
 
 func addSection(cfg *Config, name string) {

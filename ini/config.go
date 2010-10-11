@@ -35,6 +35,17 @@ func (this *Config) Clear() {
 	this.Sections = make(map[string]*Section)
 }
 
+func (this *Config) AddComment(section, val string) {
+	section = strings.ToLower(section)
+	key = strings.ToLower(key)
+
+	if _, ok := this.Sections[section]; !ok {
+		this.Sections[section] = NewSection(section)
+	}
+
+	this.Sections[section].AddComment(val)
+}
+
 func (this *Config) Set(section, key string, val interface{}) {
 	section = strings.ToLower(section)
 	key = strings.ToLower(key)

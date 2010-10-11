@@ -20,6 +20,7 @@
 package ini
 
 import "fmt"
+import "strings"
 import "strconv"
 
 type Section struct {
@@ -31,13 +32,26 @@ type Section struct {
 func NewSection(name string) *Section {
 	return &Section{
 		Name:     name,
-		Comments: make([]string, 0),
+		Comments: make([]string, 0, 8),
 		Pairs:    make(map[string]string),
 	}
 }
 
 func (this *Section) String() string {
 	return fmt.Sprintf("[%s]", this.Name)
+}
+
+func (this *Section) AddComment(val string) {
+	sz := len(this.Comments)
+
+	if sz >= cap(this.Comments) {
+		cp := make([]string, sz, sz+8)
+		copy(cp, this.Comments)
+		this.Comments = cp
+	}
+
+	this.Comments = this.Comments[0 : sz+1]
+	this.Comments[sz] = strings.TrimSpace(val)
 }
 
 func (this *Section) Set(key string, val interface{}) {
