@@ -37,7 +37,6 @@ func (this *Config) Clear() {
 
 func (this *Config) AddComment(section, val string) {
 	section = strings.ToLower(section)
-	key = strings.ToLower(key)
 
 	if _, ok := this.Sections[section]; !ok {
 		this.Sections[section] = NewSection(section)
