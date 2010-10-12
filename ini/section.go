@@ -42,16 +42,20 @@ func (this *Section) String() string {
 }
 
 func (this *Section) AddComment(val string) {
-	sz := len(this.Comments)
+	// Any newlines in the supplied text should be considered independant comments.
 
-	if sz >= cap(this.Comments) {
-		cp := make([]string, sz, sz+8)
+	list := strings.Split(val, "\n", -1)
+	osz := len(this.Comments)
+	nsz := osz + len(list)
+
+	if nsz >= cap(this.Comments) {
+		cp := make([]string, nsz, nsz+8)
 		copy(cp, this.Comments)
 		this.Comments = cp
 	}
 
-	this.Comments = this.Comments[0 : sz+1]
-	this.Comments[sz] = strings.TrimSpace(val)
+	this.Comments = this.Comments[0:nsz]
+	copy(this.Comments[osz:], list)
 }
 
 func (this *Section) Set(key string, val interface{}) {
